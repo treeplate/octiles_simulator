@@ -1,4 +1,5 @@
 import 'tiles.dart';
+import 'textgrid.dart';
 
 class TileLocation {
   const TileLocation(this.x, this.y);
@@ -90,13 +91,13 @@ class GridBoard extends Board {
     var deltaY;
     switch (dir) {
       case Direction.north:
-      case Direction.northwest:
-      case Direction.northeast:
+      //case Direction.northwest:
+      //case Direction.northeast:
         deltaY = -1;
         break;
       case Direction.south:
-      case Direction.southwest:
-      case Direction.southeast:
+      //case Direction.southwest:
+      //case Direction.southeast:
         deltaY = 1;
         break;
       default:
@@ -104,13 +105,13 @@ class GridBoard extends Board {
     }
     switch (dir) {
       case Direction.west:
-      case Direction.northwest:
-      case Direction.southwest:
+      //case Direction.northwest:
+      //case Direction.southwest:
         deltaX = -1;
         break;
       case Direction.east:
-      case Direction.northeast:
-      case Direction.southeast:
+      //case Direction.northeast:
+      //case Direction.southeast:
         deltaX = 1;
         break;
       default:
@@ -135,7 +136,24 @@ class GridBoard extends Board {
   }
 
   String draw() {
-    return tiles.toString();
-    
+    const int dim = 9;
+    TextGrid screen = TextGrid(tiles.first.length * dim, tiles.length * dim);
+    for (int y = 0; y < tiles.length; y += 1) {
+      for (int x = 0; x < tiles[y].length; x += 1) {
+        if (tiles[y][x] == null)
+          continue;
+        Set<Direction> connections = Direction.values.toSet();
+        if (y == 0)
+          connections.remove(Direction.north);
+        else if (y == tiles.length - 1)
+          connections.remove(Direction.south);
+        if (x == 0)
+          connections.remove(Direction.east);
+        else if (x == tiles[y].length - 1)
+          connections.remove(Direction.west);
+        screen.draw(x * dim, y * dim, tiles[y][x].draw(9, connections));
+      }
+    }
+    return "$screen";
   }
 }

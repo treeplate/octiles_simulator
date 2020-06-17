@@ -2,13 +2,15 @@ import 'dart:io';
 
 import 'meeple.dart';
 import 'board.dart';
+import 'textgrid.dart';
 import 'tiles.dart';
 
 void main() {
 	Board board = GridBoard();
   int currentPlayer = 0;
+  //print(TextGrid(30, 30)..drawCustomBox(0,0 , 30, 30, ["/", "\\", "\\", "/", "-", "|"]));
   while (!board.won) {
-    print('Current player: $currentPlayer (${colors[currentPlayer]})');
+    print('Current player: $currentPlayer (${colorsAsString[currentPlayer]})');
     print('Board:');
     showBoard(board);
     print('Active tile:');
@@ -33,6 +35,7 @@ void main() {
             meepleDirection = action.direction;
             break;
           case MeepleActionKind.stop:
+          print("\u001b[2J");
             break loop;
           case MeepleActionKind.invalid:
             // TODO: handle this better
@@ -54,8 +57,7 @@ void showBoard(Board board) {
 }
 
 void showTile(Tile tile) {
-  //TODO: prettier tile
-  print(tile);
+  print(tile.draw(9));
 }
 
 TileLocation readTilePosition() {
@@ -68,17 +70,18 @@ TileLocation readTilePosition() {
 
 Direction readDirection(String message) {
   while (true) {
-    print('$message (n/ne/e/se/s/sw/w/nw)? ');
+    //print('$message (n/ne/e/se/s/sw/w/nw)? ');
+    print('$message (n/e/s/w)? ');
     String input = stdin.readLineSync();
     switch (input) {
       case 'n': return Direction.north;
-      case 'ne': return Direction.northeast;
+      //case 'ne': return Direction.northeast;
       case 'e': return Direction.east;
-      case 'se': return Direction.southeast;
+      //case 'se': return Direction.southeast;
       case 's': return Direction.south;
-      case 'sw': return Direction.southwest;
+      //case 'sw': return Direction.southwest;
       case 'w': return Direction.west;
-      case 'nw': return Direction.northwest;
+      //case 'nw': return Direction.northwest;
     }
   }
 }

@@ -1,9 +1,10 @@
 import 'meeple.dart';
+import 'textgrid.dart';
 
 enum MeepleActionKind { move, stop, invalid }
 enum Direction {
   // the order of this enum is critical for reverseDirection()
-  north, south, northeast, southwest, east, west, southeast, northwest
+  north, south, /*northeast, southwest,*/ east, west, /*southeast, northwest*/
 }
 
 Direction reverseDirection(Direction direction) {
@@ -23,6 +24,8 @@ class MeepleAction {
 abstract class Tile {
   bool get isEmpty => true; 
   MeepleAction enterFrom(Meeple meeple, Direction direction);
+
+  TextGrid draw(int dim, [Set<Direction> connections = const <Direction>{} ]);
 }
 
 class OctagonTile extends Tile {
@@ -39,7 +42,16 @@ class OctagonTile extends Tile {
   }
 
   MeepleAction enterFrom(Meeple meeple, Direction direction) => flipped ? MeepleAction.move(_connections[direction]) : MeepleAction.invalid();
+
   String toString() => "OctagonTile:" + (flipped ? "$_connections" : "face down");
+
+  TextGrid draw(int dim, [ Set<Direction> connections = const <Direction>{} ]) {
+    TextGrid result = TextGrid(dim, dim);
+    result.drawSingleBox(0, 0, dim, dim);
+    // TODO draw connections
+    // TODO draw _connections
+    return result;
+  }
 }
 
 class PrintedTile extends Tile {
@@ -56,9 +68,16 @@ class PrintedTile extends Tile {
     return MeepleAction.invalid();
   }
   String toString() => "PrintedTile from $from to $to";
+
+  TextGrid draw(int dim, [ Set<Direction> connections = const <Direction>{}]) {
+    TextGrid result = TextGrid(dim, dim);
+    // TODO draw connections
+    // TODO draw from-to
+    return result;
+  }
 }
 
-abstract class MeepleTile extends Tile{
+abstract class MeepleTile extends Tile {
   Meeple _meeple;
 
   bool get isEmpty => _meeple == null;
@@ -77,6 +96,16 @@ abstract class MeepleTile extends Tile{
     _meeple = null;
     return result;
   }
+
+  TextGrid draw(int dim, [ Set<Direction> connections = const <Direction>{}, TextStyle borderStyle]) {
+    TextGrid result = TextGrid(dim, dim);
+    int innerDim = (dim / 2).ceil();
+    int padding = (dim - innerDim) ~/ 2;
+    result.drawSingleBox(padding, padding, innerDim, innerDim, borderStyle: borderStyle);
+    // TODO draw connections
+    // TODO draw _meeple
+    return result;
+  }
 }
 
 class SquareTile extends MeepleTile { 
@@ -87,7 +116,9 @@ class HomeTile extends MeepleTile {
   HomeTile(this.side) {
     _meeple = Meeple(side);
   }
+
   int get meepleGoalSide => _meeple?.goal ?? null;
+
   final int side;
 
   MeepleAction enterFrom(Meeple meeple, Direction direction) {
@@ -96,5 +127,10 @@ class HomeTile extends MeepleTile {
     return MeepleAction.invalid();
   }
 
-  String toString() => colors[side] + "'s home" + (isEmpty ? '' : ' with $_meeple'); 
+  String toString() => colorsAsString[side] + "'s home" + (isEmpty ? '' : ' with $_meeple'); 
+
+  TextGrid draw(int dim, [ Set<Direction> connections = const <Direction>{}, TextStyle borderStyle ]) {
+    TextGrid result = super.draw(dim, connections, TextStyle(foreground: colorsAsAnsi[side]));
+    return result;
+  }
 }
