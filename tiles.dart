@@ -1,7 +1,6 @@
 import 'meeple.dart';
 
 enum MeepleActionKind { move, stop, invalid }
-
 enum Direction {
   // the order of this enum is critical for reverseDirection()
   north, south, northeast, southwest, east, west, southeast, northwest

@@ -5,7 +5,7 @@ import 'board.dart';
 import 'tiles.dart';
 
 void main() {
-	Board board = DefaultBoard();
+	Board board = GridBoard();
   int currentPlayer = 0;
   while (!board.won) {
     print('Current player: $currentPlayer (${colors[currentPlayer]})');
@@ -28,7 +28,7 @@ void main() {
         MeepleAction action = tile.enterFrom(meeple, reverseDirection(meepleDirection));
         switch (action.kind) {
           case MeepleActionKind.move:
-            print("moving");
+            //print("moving");
             tile = board.findConnectingTile(tile, action.direction);
             meepleDirection = action.direction;
             break;
@@ -36,7 +36,7 @@ void main() {
             break loop;
           case MeepleActionKind.invalid:
             // TODO: handle this better
-            print("Invalid move (says ${tile}). Your meeple is now dead.");
+            print("Invalid move (going $meepleDirection to $tile). Your meeple is now dead.");
             break loop;
         }
       }
@@ -50,8 +50,7 @@ void main() {
 }
 
 void showBoard(Board board) {
-  //TODO: prettier board
-  print((board as DefaultBoard).tiles);
+  print(board.draw());
 }
 
 void showTile(Tile tile) {
